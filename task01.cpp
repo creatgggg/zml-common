@@ -8,62 +8,63 @@ int main(int argc, char** argv)
 {
 	
 
-	// 2D ÌØÕ÷µãÏñËØ×ø±ê£¬ÕâÀïÊÇÓÃPSÕÒ³ö£¬Ò²¿ÉÒÔÓÃÊó±êÊÂ¼ş»­³öÌØÕ÷µã
+	// 2D ç‰¹å¾ç‚¹åƒç´ åæ ‡ï¼Œè¿™é‡Œæ˜¯ç”¨PSæ‰¾å‡ºï¼Œä¹Ÿå¯ä»¥ç”¨é¼ æ ‡äº‹ä»¶ç”»å‡ºç‰¹å¾ç‚¹
 	vector<Point2d> image_points;
 	image_points.push_back(Point2d(100, 150));
 	image_points.push_back(Point2d(300, 150));
 	image_points.push_back(Point2d(300, 300));
 	image_points.push_back(Point2d(100, 300));
 
-	// »­³öËÄ¸öÌØÕ÷µã
+	// ç”»å‡ºå››ä¸ªç‰¹å¾ç‚¹
 	
 
-	// 3D ÌØÕ÷µãÊÀ½ç×ø±ê£¬ÓëÏñËØ×ø±ê¶ÔÓ¦£¬µ¥Î»ÊÇmm
+	// 3D ç‰¹å¾ç‚¹ä¸–ç•Œåæ ‡ï¼Œä¸åƒç´ åæ ‡å¯¹åº”ï¼Œå•ä½æ˜¯mm
 	std::vector<Point3d> model_points;
-	model_points.push_back(Point3d(0, 0, 0)); // ×óÉÏ½Ç(-42.5mm,-42.5mm)
+	model_points.push_back(Point3d(0, 0, 0)); // å·¦ä¸Šè§’(-42.5mm,-42.5mm)
 	model_points.push_back(Point3d(100,0, 0));
 	model_points.push_back(Point3d(100,100, 0));
 	model_points.push_back(Point3d(0,100, 0));
-	//¡¡×¢ÒâÊÀ½ç×ø±êºÍÏñËØ×ø±êÒªÒ»Ò»¶ÔÓ¦
+	//ã€€æ³¨æ„ä¸–ç•Œåæ ‡å’Œåƒç´ åæ ‡è¦ä¸€ä¸€å¯¹åº”
 
-	// Ïà»úÄÚ²Î¾ØÕóºÍ»û±äÏµÊı¾ùÓÉÏà»ú±ê¶¨½á¹ûµÃ³ö
-	// Ïà»úÄÚ²Î¾ØÕó
+	// ç›¸æœºå†…å‚çŸ©é˜µå’Œç•¸å˜ç³»æ•°å‡ç”±ç›¸æœºæ ‡å®šç»“æœå¾—å‡º
+	// ç›¸æœºå†…å‚çŸ©é˜µ
 	Mat camera_matrix = (Mat_<double>(3, 3) << 1462.3697, 0, 398.59394,
 		0,1469.68385, 110.68997,
 		0, 0, 1);
-	// Ïà»ú»û±äÏµÊı
+	// ç›¸æœºç•¸å˜ç³»æ•°
 	Mat dist_coeffs = (Mat_<double>(5, 1) << 0.003518,- 0.311778,
 		-0.016581,0.023682,0.0000);
 
 	cout << "Camera Matrix " << endl << camera_matrix << endl << endl;
-	// Ğı×ªÏòÁ¿
+	// æ—‹è½¬å‘é‡
 	Mat rotation_vector;
-	// Æ½ÒÆÏòÁ¿
+	// å¹³ç§»å‘é‡
 	Mat translation_vector;
 
-	// pnpÇó½â
+	// pnpæ±‚è§£
 	solvePnP(model_points, image_points, camera_matrix, dist_coeffs, \
 		rotation_vector, translation_vector, 0, SOLVEPNP_ITERATIVE);
-	// Ä¬ÈÏITERATIVE·½·¨£¬¿É³¢ÊÔĞŞ¸ÄÎªEPNP£¨CV_EPNP£©,P3P£¨CV_P3P£©
+	// é»˜è®¤ITERATIVEæ–¹æ³•ï¼Œå¯å°è¯•ä¿®æ”¹ä¸ºEPNPï¼ˆCV_EPNPï¼‰,P3Pï¼ˆCV_P3Pï¼‰
 
 	cout << "Rotation Vector " << endl << rotation_vector << endl << endl;
 	cout << "Translation Vector" << endl << translation_vector << endl << endl;
 
 	Mat Rvec;
 	Mat_<float> Tvec;
-	rotation_vector.convertTo(Rvec, CV_32F);  // Ğı×ªÏòÁ¿×ª»»¸ñÊ½
-	translation_vector.convertTo(Tvec, CV_32F); // Æ½ÒÆÏòÁ¿×ª»»¸ñÊ½ 
+	rotation_vector.convertTo(Rvec, CV_32F);  // æ—‹è½¬å‘é‡è½¬æ¢æ ¼å¼
+	translation_vector.convertTo(Tvec, CV_32F); // å¹³ç§»å‘é‡è½¬æ¢æ ¼å¼ 
 
 	Mat_<float> rotMat(3, 3);
 	Rodrigues(Rvec, rotMat);
-	// Ğı×ªÏòÁ¿×ª³ÉĞı×ª¾ØÕó
+	// æ—‹è½¬å‘é‡è½¬æˆæ—‹è½¬çŸ©é˜µ
 	cout << "rotMat" << endl << rotMat << endl << endl;
 
 	Mat P_oc;
 	P_oc = -rotMat.inv() * Tvec;
-	// Çó½âÏà»úµÄÊÀ½ç×ø±ê£¬µÃ³öp_ocµÄµÚÈı¸öÔªËØ¼´Ïà»úµ½ÎïÌåµÄ¾àÀë¼´Éî¶ÈĞÅÏ¢£¬µ¥Î»ÊÇmm
+	// æ±‚è§£ç›¸æœºçš„ä¸–ç•Œåæ ‡ï¼Œå¾—å‡ºp_ocçš„ç¬¬ä¸‰ä¸ªå…ƒç´ å³ç›¸æœºåˆ°ç‰©ä½“çš„è·ç¦»å³æ·±åº¦ä¿¡æ¯ï¼Œå•ä½æ˜¯mm
 	cout << "P_oc" << endl << P_oc << endl;
-
+	double distance_to_origin = norm(P_oc);
+	cout << "Distance from Camera to Origin (in mm): " << distance_to_origin << endl;
 	
 	waitKey(0);
 }
