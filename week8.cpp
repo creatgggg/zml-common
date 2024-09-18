@@ -17,21 +17,15 @@ int main() {
 
     cv::Scalar lower_red = cv::Scalar(0, 120, 70);
     cv::Scalar upper_red = cv::Scalar(10, 255, 255);
-    cv::Scalar lower_blue = cv::Scalar(110, 50, 50);
-    cv::Scalar upper_blue = cv::Scalar(130, 255, 255);
 
     cv::Mat mask_red, mask_blue;
     cv::inRange(hsv, lower_red, upper_red, mask_red);
-    cv::inRange(hsv, lower_blue, upper_blue, mask_blue);
- 
+
     std::vector<std::vector<cv::Point>> contours_red, contours_blue;
     cv::findContours(mask_red, contours_red, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-    cv::findContours(mask_blue, contours_blue, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
  
     double red_max = 70.0;
     double red_min = 48.0;
-    double blue_max = 89.0;
-    double blue_min = 75.0;
     vector<cv::Rect>light;
 
     for (const auto& contour : contours_red) {
@@ -77,27 +71,27 @@ int main() {
 
     std::vector<Point3d> model_points;
     model_points.push_back(Point3d(0, 0, 0)); 
-    model_points.push_back(Point3d(100, 0, 0));
-    model_points.push_back(Point3d(100, 100, 0));
-    model_points.push_back(Point3d(0, 100, 0));
+    model_points.push_back(Point3d(160, 0, 0));
+    model_points.push_back(Point3d(160, 80, 0));
+    model_points.push_back(Point3d(0, 80, 0));
 
 
     
-    // 相机内参矩阵
+    // 鐩告満鍐呭弬鐭╅樀
     Mat camera_matrix = (Mat_<double>(3, 3) << 1462.3697, 0, 398.59394,
         0, 1469.68385, 110.68997,
         0, 0, 1);
-    // 相机畸变系数
+    // 鐩告満鐣稿彉绯绘暟
     Mat dist_coeffs = (Mat_<double>(5, 1) << 0.003518, -0.311778,
         -0.016581, 0.023682, 0.0000);
 
     cout << "Camera Matrix " << endl << camera_matrix << endl << endl;
-    // 旋转向量
+    // 鏃嬭浆鍚戦噺
     Mat rotation_vector;
-    // 平移向量
+    // 骞崇Щ鍚戦噺
     Mat translation_vector;
 
-    // pnp求解
+    // pnp姹傝В
     solvePnP(model_points, image_points, camera_matrix, dist_coeffs, \
         rotation_vector, translation_vector, 0, SOLVEPNP_ITERATIVE);
     
@@ -118,6 +112,7 @@ int main() {
     double distance_to_origin = norm(Tvec);
     cout << "Distance from Camera to Origin (in mm): " << distance_to_origin << endl;
     std::vector<Point3f> camera_points;
+    //鍧愭爣杞崲
     for (const auto& pt : model_points) {
         Point3f camera_pt;  
         camera_pt.x = rotMat.at<float>(0, 0) * pt.x + rotMat.at<float>(0, 1) * pt.y + rotMat.at<float>(0, 2) * pt.z + Tvec.at<float>(0);
